@@ -15,11 +15,11 @@ rmmod i2c_dev
 rmmod i2c_bcm2708
 ```
 
-## Examples
+### Examples
 
 These are some files that you can use as a quick start guide.
 
-### [scan.c](scan.c)
+#### [scan.c](scan.c)
 
 This is a I2C scanner. It just tries every I2C address from 0 to 128 and test the acknowledge.
 
@@ -32,7 +32,7 @@ I2C scan for soft_i2c project
 ```
 
 
-### [pcf8591.c](pcf8591.c)
+#### [pcf8591.c](pcf8591.c)
 
 This is a small software to read PCF8591 ADC/DAC. It setup the device to read channel 1 and 
 reads it in continuous mode until the user interrupts.
