@@ -81,7 +81,7 @@ int i2c_read_bit(i2c_t port) {
 }
 
 /* Sends 8 bit in a row, MSB first and reads ACK.
- * Returns 0 if device ack'ed */
+ * Returns 1 if device ack'ed */
 int i2c_send_byte(i2c_t port, uint8_t byte) {
 	int i;
 
@@ -90,7 +90,7 @@ int i2c_send_byte(i2c_t port, uint8_t byte) {
 		byte = byte << 1;
 	}
 
-	return i2c_read_bit(port);
+	return !i2c_read_bit(port);
 }
 
 /* Reads a byte, MSB first */
