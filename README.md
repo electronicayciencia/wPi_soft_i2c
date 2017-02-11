@@ -6,7 +6,7 @@ This is a basic software implementation of I2C protocol using WiringPi library f
 
 You will need to install Gordon's WiringPi library first. 
 
-Download soft_i2c.c and soft_i2c.h and place them in your project directory.
+Download soft_i2c.c and soft_i2c.h and place them into your project directory.
 
 If you are willing to use pins 8 and 9, notice these are hardware enabled I2C pins. So please make sure you unloaded i2c kernel modules before using these routines.
 
@@ -15,9 +15,27 @@ rmmod i2c_dev
 rmmod i2c_bcm2708
 ```
 
-### Example
+## Examples
 
-See file [pcf8591.c](pcf8591.c) for a quick start guide.
+These are some files that you can use as a quick start guide.
+
+### [scan.c](scan.c)
+
+This is a I2C scanner. It just tries every I2C address from 0 to 128 and test the acknowledge.
+
+Just modify the *i2c_init* line to set up your ports. Remember to use WiringPi numbers. Run the scan and...
+
+```
+$ ./scan
+I2C scan for soft_i2c project
+ * Device found at 50h
+```
+
+
+### [pcf8591.c](pcf8591.c)
+
+This is a small software to read PCF8591 ADC/DAC. It setup the device to read channel 1 and 
+reads it in continuous mode until the user interrupts.
 
 
 ## Usage
@@ -97,8 +115,8 @@ status = i2c_read_bit(my_bus);
 
 #### int i2c_send_byte(i2c_t bus, uint8_t byte);
 
-Sends 8 bits (1 byte) through the bus passed as argument. Returns 1 if the slave ack'ed the byte, 0 if error.
-Remember I2C bytes are sent or received MSB first.
+Sends 8 bits (1 byte) through the bus passed as argument. Returns I2C_ACK if the slave ack'ed the byte, 
+and I2C_NACK in case of error. Remember I2C bytes are sent or received MSB first.
 
 ```
 ack = i2c_send_byte(my_bus, address_byte);
@@ -111,7 +129,7 @@ i2c_t my_bus1 = i2c_init(9, 8);
 
 i2c_start(my_bus);
 
-if (i2c_send_byte(my_bus, 0x48 << 1 | I2C_READ))
+if (i2c_send_byte(my_bus, 0x48 << 1 | I2C_READ) == I2C_ACK)
 	puts("Device found!");
 
 i2c_stop(my_bus);
@@ -137,7 +155,6 @@ else {
 	printf("We didn't like the byte.\n");
 }
 ```
-
 
 ## Known bugs and limitations
 
