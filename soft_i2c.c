@@ -21,10 +21,18 @@ void _i2c_pull(int pin) {
 }
 
 /* Release: releases the line and return line status */
-int _i2c_release(int pin) {
+void _i2c_release(int pin) {
 	pinMode(pin, INPUT);
 	delayMicroseconds((1e6/I2C_FREQ)/2);
-	return digitalRead(pin);
+}
+
+/* In case of clock stretching or busy bus we must wait */
+void _i2c_release_wait(int pin) {
+	pinMode(pin, INPUT);
+	delayMicroseconds((1e6/I2C_FREQ)/2);
+	while (!digitalRead(pin))
+		delayMicroseconds((1e6/I2C_FREQ)/2);
+	delayMicroseconds((1e6/I2C_FREQ)/2);
 }
 
 /* Initializes software emulated i2c */
@@ -36,35 +44,38 @@ i2c_t i2c_init(int scl, int sda) {
 	pullUpDnControl(scl, PUD_UP);
 	pullUpDnControl(sda, PUD_UP);
 
-	port.scl  = scl;
-	port.sda  = sda;
+	port.scl = scl;
+	port.sda = sda;
 
 	return port;
 }
 
 /* Start: pull SDA while SCL is up*/
-/* Best practice is test the bus before start */
+/* Best practice is to ensure the bus is not busy before start */
 void i2c_start(i2c_t port) {
-    _i2c_pull(port.sda);
+    _i2c_release_wait(port.sda);
+    _i2c_release_wait(port.scl);
+	_i2c_pull(port.sda);
 	_i2c_pull(port.scl);
 }
 
 /* Stop: release SDA while SCL is up */
 void i2c_stop(i2c_t port) {
-	_i2c_release(port.scl);
-	_i2c_release(port.sda);
+	_i2c_release_wait(port.scl);
+	_i2c_release_wait(port.sda);
 }
 
 /* Sends 0 or 1: 
- * Clock down, send bit, clock up, wait, clock down again */
+ * Clock down, send bit, clock up, wait, clock down again 
+ * In clock stretching, slave holds the clock line down in order
+ * to force master to wait before send more data */
 void i2c_send_bit(i2c_t port, int bit) {
-	//_i2c_pull(port.scl);
 	if (bit)
 		_i2c_release(port.sda);
 	else
 		_i2c_pull(port.sda);
 		
-	_i2c_release(port.scl);
+	_i2c_release_wait(port.scl);
 	_i2c_pull(port.scl);
 }
 

@@ -27,8 +27,11 @@ typedef struct {
 /* Pull: drives the line to level LOW */
 void _i2c_pull(int pin);
 
-/* Release: releases the line and return line status */
-int _i2c_release(int pin);
+/* Release: releases the line */
+void _i2c_release(int pin);
+
+/* Release_wait: releases the line and wait until it goes up*/
+void _i2c_release_wait(int pin);
 
 /* Initializes software emulated i2c */
 i2c_t i2c_init(int scl, int sda);

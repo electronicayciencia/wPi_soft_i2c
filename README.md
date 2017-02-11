@@ -48,7 +48,8 @@ i2c_t my_bus1 = i2c_init(9, 8);
 
 #### void i2c_start(i2c_t bus);
 
-Sends a I2C start signal to the bus passed as parameter. As a result, it drives both lines low. It does not return anything.
+First, wait until both lines goes up, this means the bus is not busy. Then it sends a I2C start signal to the bus
+passed as parameter. As a result, it drives both lines low. It does not return anything.
 
 ```
 i2c_start(my_bus);
@@ -66,6 +67,8 @@ i2c_stop(my_bus);
 
 Sends one bit through the bus. If second argument is true, it sends one. Zero in other case. 
 Can be used to send an ack from the master. It does not return anything.
+
+This routine is clock stretching aware, it take into account that SCL line should go up before sending more data.
 
 ```
 i2c_send_bit(my_bus, 1);
@@ -138,12 +141,10 @@ else {
 
 ## Known bugs and limitations
 
-* Currently only bits and 8 bits registers are supported.
+* Currently only bits and 8 bit registers are supported.
 * Delays are CPU loops.
-* Low speed, 100kHz frequency.
+* Low speed, 100kHz frequency only.
 * Only master mode.
-* Does not check the bus before start.
-* Clock stretching is not implemented.
 
 ## See also
 
