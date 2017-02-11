@@ -30,19 +30,19 @@ int main (void)
 
 	// Send control register
 	i2c_start(i2c);
-	i2c_send_byte(i2c, 0x48 << 1 | 0);
+	i2c_send_byte(i2c, 0x48 << 1 | I2C_WRITE);
 	i2c_send_byte(i2c, 1);
 	i2c_stop(i2c);
 
 	// Read A/D values
 	i2c_start(i2c);
-	i2c_send_byte(i2c, 0x48 << 1 | 1);
+	i2c_send_byte(i2c, 0x48 << 1 | I2C_READ);
 
 	while(1) {
 		int byte = i2c_read_byte(i2c);
-		i2c_send_bit(i2c, 0);
+		i2c_send_bit(i2c, I2C_ACK);
 		printf("-%d-\n", byte);
-//		delayMicroseconds(100000);
+		delayMicroseconds(10000);
 	}
 
 	i2c_stop(i2c);

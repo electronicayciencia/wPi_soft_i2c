@@ -11,6 +11,11 @@
 
 #include <stdint.h>
 
+#define I2C_READ   1
+#define I2C_WRITE  0
+#define I2C_ACK    0
+#define I2C_NACK   1
+
 #define I2C_FREQ 100000    /* I2C clock max frequency 100kHz */
 
 typedef struct {
