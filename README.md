@@ -41,12 +41,12 @@ reads it in continuous mode until the user interrupts.
 ## Usage
 
 Include headers file in your main program:
-```
+```c
 #include "soft_i2c.h"
 ```
 
 Since this is not a library, you need to add the source file to gcc compile line.
-```
+```c
 gcc -lwiringPi soft_i2c.c pcf8591.c -o pcf8591
 ```
 
@@ -60,7 +60,7 @@ Returns a new i2c_t structure and set the indicated pins as inputs with pull-up 
 
 You can have as many busses defined as you need.
 
-```
+```c
 i2c_t my_bus1 = i2c_init(9, 8);
 ```
 
@@ -69,7 +69,7 @@ i2c_t my_bus1 = i2c_init(9, 8);
 First, wait until both lines goes up, this means the bus is not busy. Then it sends a I2C start signal to the bus
 passed as parameter. As a result, it drives both lines low. It does not return anything.
 
-```
+```c
 i2c_start(my_bus);
 ```
 
@@ -77,7 +77,7 @@ i2c_start(my_bus);
 
 Sends a I2C start signal to the bus passed as parameter. After that, both lines are released. It does not return anything.
 
-```
+```c
 i2c_stop(my_bus);
 ```
 
@@ -88,19 +88,19 @@ Can be used to send an ack from the master. It does not return anything.
 
 This routine is clock stretching aware, it take into account that SCL line should go up before sending more data.
 
-```
+```c
 i2c_send_bit(my_bus, 1);
 ```
 
 You can also use the pre-defined constants:
 
-```
+```c
 i2c_send_bit(my_bus, I2C_ACK);
 ```
 
 Or
 
-```
+```c
 i2c_send_bit(my_bus, I2C_NACK);
 ```
 
@@ -109,7 +109,7 @@ i2c_send_bit(my_bus, I2C_NACK);
 
 Reads one bit and returns it. It is not much useful on its own but used by i2c_read_byte to receive the acknowledge bit.
 
-```
+```c
 status = i2c_read_bit(my_bus);
 ```
 
@@ -118,13 +118,13 @@ status = i2c_read_bit(my_bus);
 Sends 8 bits (1 byte) through the bus passed as argument. Returns I2C_ACK if the slave ack'ed the byte, 
 and I2C_NACK in case of error. Remember I2C bytes are sent or received MSB first.
 
-```
+```c
 ack = i2c_send_byte(my_bus, address_byte);
 ```
 
 For example, to test if there is a device with address 0x48 you can do this:
 
-```
+```c
 i2c_t my_bus1 = i2c_init(9, 8);
 
 i2c_start(my_bus);
@@ -143,7 +143,7 @@ Note the use of I2C_READ and I2C_WRITE to indicate the bus operation.
 Reads a byte from the bus and returns it. But NOT ack the byte. You must ack the byte using i2c_send_bit as you wish.
 Remember I2C bytes are sent or received MSB first.
 
-```
+```c
 int byte = i2c_read_byte(i2c);
 
 if (we_liked(byte)) {
