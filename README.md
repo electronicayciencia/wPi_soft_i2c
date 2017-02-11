@@ -32,6 +32,7 @@ Since this is not a library, you need to add the source file to gcc compile line
 gcc -lwiringPi soft_i2c.c pcf8591.c -o pcf8591
 ```
 
+
 ### Functions
 
 #### i2c_t i2c_init(int scl, int sda);
@@ -42,7 +43,7 @@ Returns a new i2c_t structure and set the indicated pins as inputs with pull-up 
 You can have as many busses defined as you need.
 
 ```
-i2c_t my_bus1 = i2c_init(10, 11);
+i2c_t my_bus1 = i2c_init(9, 8);
 ```
 
 #### void i2c_start(i2c_t bus);
@@ -70,6 +71,19 @@ Can be used to send an ack from the master. It does not return anything.
 i2c_send_bit(my_bus, 1);
 ```
 
+You can also use the pre-defined constants:
+
+```
+i2c_send_bit(my_bus, I2C_ACK);
+```
+
+Or
+
+```
+i2c_send_bit(my_bus, I2C_NACK);
+```
+
+
 #### int i2c_read_bit(i2c_t bus);
 
 Reads one bit and returns it. It is not much useful on its own but used by i2c_read_byte to receive the acknowledge bit.
@@ -84,7 +98,7 @@ Sends 8 bits (1 byte) through the bus passed as argument. Returns 1 if the slave
 Remember I2C bytes are sent or received MSB first.
 
 ```
-ack = i2c_send_byte(my_bus, control);
+ack = i2c_send_byte(my_bus, address_byte);
 ```
 
 For example, to test if there is a device with address 0x48 you can do this:
@@ -94,11 +108,13 @@ i2c_t my_bus1 = i2c_init(9, 8);
 
 i2c_start(my_bus);
 
-if (i2c_send_byte(my_bus, 0x48 << 1 | 1))
+if (i2c_send_byte(my_bus, 0x48 << 1 | I2C_READ))
 	puts("Device found!");
 
 i2c_stop(my_bus);
 ```
+
+Note the use of I2C_READ and I2C_WRITE to indicate the bus operation.
 
 
 #### uint8_t i2c_read_byte(i2c_t bus);
@@ -110,14 +126,13 @@ Remember I2C bytes are sent or received MSB first.
 int byte = i2c_read_byte(i2c);
 
 if (we_liked(byte)) {
-	i2c_send_bit(i2c, 0); // 0 is a positive ack
+	i2c_send_bit(i2c, I2C_ACK); // 0 is a positive ack
 	printf("We read: %d\n", byte);
 }
 else {
-	i2c_send_bit(i2c, 1); // 1 is NOT acknowledge
+	i2c_send_bit(i2c, I2C_NACK); // 1 is NOT acknowledge
 	printf("We didn't like the byte.\n");
 }
-
 ```
 
 
