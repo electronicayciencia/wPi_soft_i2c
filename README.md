@@ -39,7 +39,7 @@ I2C scan for soft_i2c project
 This is a small software to read PCF8591 ADC/DAC. It setup the device to read channel 1 and 
 reads it in continuous mode until the user interrupts.
 
-#### [24lc128.c](24ls128.c)
+#### [24lc128.c](24lc128.c)
 
 This example writes a string to a 24ls128 chip and reads it back. It uses 16 bit addressing.
 
