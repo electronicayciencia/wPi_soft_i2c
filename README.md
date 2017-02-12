@@ -39,20 +39,44 @@ reads it in continuous mode until the user interrupts.
 
 #### [i2cli.c](i2cli.c)
 
-This is a little more complicated example. A full command line interface for I2C. The usage is simple but raw.
+This is a little more complicated example. A full command line interface for I2C. Simple but raw.
+
+For example, to write and then read 24lc128 EEPROM you will use this sequence:
 
 ```
-$ ./i2cli 23 24
+$ ./i2cli 9 8
 I2C Command Line Interface
-I2C ready. SCL: 23, SDA: 24
- * Device found at 50h
+I2C ready. SCL: 9, SDA: 8
 
-s: start   p: stop   a: ack   n: nak   wHH: write byte HH   r: read byte   q: quit
-i2cli> s
-i2cli> wa1
-ACK
-i2cli> p
-i2cli> q
+s: start   p: stop   a: ack   n: nak   wHH: write byte HH   r: read byte   q: quit   C: scan
+i2cli> C
+ * Device found at 50h  (R: a1, W: a0)
+i2cli> s      ; start
+i2cli> wa0    ; 50h write
+a0 -> ACK
+i2cli> w00    ; address MSB 00h
+00 -> ACK
+i2cli> w00    ; address LSB 01h
+00 -> ACK
+i2cli> w5b    ; write 0001: 5b
+5b -> ACK
+i2cli> w5c    ; write 0002: 5c
+5c -> ACK
+i2cli> p      ; stop
+i2cli> s      ; start
+i2cli> wa0    ; 50h write
+a0 -> ACK
+i2cli> w00    ; address MSB 00h
+00 -> ACK
+i2cli> w02    ; address LSB 02h
+02 -> ACK
+i2cli> s      ; restart
+i2cli> wa1    ; 50h read
+a1 -> ACK
+i2cli> r      ; read byte
+5c            ; byte in 0002: 5c 
+i2cli> p      ; ack
+i2cli> q      ; quit
 i2cli> Bye!
 ```
 
@@ -78,6 +102,9 @@ Initializes a new i2c bus. The parameters SCL and SDA are SCL and SDA pin number
 Returns a new i2c_t structure and set the indicated pins as inputs with pull-up enabled.
 
 You can have as many busses defined as you need.
+
+If i2c_init detects the bus is busy, it will wait a moment, then send a clock pulse in order to make the device 
+release SDA so it can create a stop condition.
 
 ```c
 i2c_t my_bus1 = i2c_init(9, 8);

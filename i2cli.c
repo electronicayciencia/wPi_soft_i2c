@@ -44,22 +44,14 @@ int main (int argc, char **argv)
 	
 	printf("I2C ready. SCL: %d, SDA: %d\n", scl, sda);
 	
-	// Let's scan
-	int addr;
-	for (addr = 0; addr < 128; addr++) {
-		i2c_start(i2c);
-		if (i2c_send_byte(i2c, addr << 1 | I2C_READ) == I2C_ACK)
-			printf (" * Device found at %0xh\n", addr);
-		i2c_stop(i2c);
-	}
-	
 	// Start CLI
-	puts ("\ns: start   p: stop   a: ack   n: nak   wHH: write byte HH   r: read byte   q: quit");
+	puts ("\ns: start   p: stop   a: ack   n: nak   wHH: write byte HH   r: read byte   q: quit   C: scan");
 	printf("i2cli> ");
 
 	char cmd[5];
 	char byte;
 	int terminate = 0;
+	int addr;
 	
 	while (!terminate && fgets(cmd, sizeof cmd, stdin)) {
 
@@ -77,15 +69,16 @@ int main (int argc, char **argv)
 				break;
 
 			case 'a':
-				i2c_send_byte(i2c, I2C_ACK);
+				i2c_send_bit(i2c, I2C_ACK);
 				break;
 
 			case 'n':
-				i2c_send_byte(i2c, I2C_NACK);
+				i2c_send_bit(i2c, I2C_NACK);
 				break;
 
 			case 'w':
 				byte = strtol(cmd + 1, NULL, 16);
+				printf("%02x -> ", byte);
 				if(i2c_send_byte(i2c, byte) == I2C_ACK)
 					puts("ACK");
 				else
@@ -96,8 +89,21 @@ int main (int argc, char **argv)
 				printf("%02x\n", i2c_read_byte(i2c));
 				break;
 
+			case 'C':
+				for (addr = 0; addr < 128; addr++) {
+					i2c_start(i2c);
+					// Some devices best scanned using read, other using write
+					if (i2c_send_byte(i2c, addr << 1 | I2C_WRITE) == I2C_ACK)
+						printf (" * Device found at %02xh  (R: %02x, W: %02x)\n",
+							addr,
+							addr << 1 | 1,
+							addr << 1 | 0);
+					i2c_stop(i2c);
+				}
+				break;
+
 			default :
-				puts ("s: start   p: stop   a: ack   n: nak   wHH: write byte HH   r: read byte   q: quit");
+				puts ("\ns: start   p: stop   a: ack   n: nak   wHH: write byte HH   r: read byte   q: quit   C: scan");
 		}
 
 		printf("i2cli> ");
