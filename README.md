@@ -37,6 +37,25 @@ I2C scan for soft_i2c project
 This is a small software to read PCF8591 ADC/DAC. It setup the device to read channel 1 and 
 reads it in continuous mode until the user interrupts.
 
+#### [i2cli.c](i2cli.c)
+
+This is a little more complicated example. A full command line interface for I2C. The usage is simple but raw.
+
+```
+$ ./i2cli 23 24
+I2C Command Line Interface
+I2C ready. SCL: 23, SDA: 24
+ * Device found at 50h
+
+s: start   p: stop   a: ack   n: nak   wHH: write byte HH   r: read byte   q: quit
+i2cli> s
+i2cli> wa1
+ACK
+i2cli> p
+i2cli> q
+i2cli> Bye!
+```
+
 
 ## Usage
 
