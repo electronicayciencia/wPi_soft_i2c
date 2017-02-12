@@ -19,6 +19,8 @@ rmmod i2c_bcm2708
 
 These are some files that you can use as a quick start guide.
 
+If you want to compile and run them, make sure you modify i2c_init line to match your pin numbers.
+
 #### [scan.c](scan.c)
 
 This is a I2C scanner. It just tries every I2C address from 0 to 128 and test the acknowledge.
@@ -37,11 +39,15 @@ I2C scan for soft_i2c project
 This is a small software to read PCF8591 ADC/DAC. It setup the device to read channel 1 and 
 reads it in continuous mode until the user interrupts.
 
+#### [24lc128.c](24ls128.c)
+
+This example writes a string to a 24ls128 chip and reads it back. It uses 16 bit addressing.
+
 #### [i2cli.c](i2cli.c)
 
 This is a little more complicated example. A full command line interface for I2C. Simple but raw.
 
-For example, to write and then read 24lc128 EEPROM you will use this sequence:
+For example, to write and then read 24lc128 EEPROM, like in the last example, you will use this sequence:
 
 ```
 $ ./i2cli 9 8
@@ -89,7 +95,7 @@ Include headers file in your main program:
 ```
 
 Since this is not a library, you need to add the source file to gcc compile line.
-```c
+```
 gcc -lwiringPi soft_i2c.c pcf8591.c -o pcf8591
 ```
 
