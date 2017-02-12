@@ -31,7 +31,7 @@ void _i2c_release_wait(int pin) {
 	pinMode(pin, INPUT);
 	delayMicroseconds((1e6/I2C_FREQ)/2);
 	while (!digitalRead(pin))
-		delayMicroseconds((1e6/I2C_FREQ)/2);
+		delayMicroseconds(100);
 	delayMicroseconds((1e6/I2C_FREQ)/2);
 }
 
@@ -43,6 +43,11 @@ i2c_t i2c_init(int scl, int sda) {
 	pinMode(sda, INPUT);
 	pullUpDnControl(scl, PUD_UP);
 	pullUpDnControl(sda, PUD_UP);
+
+	while (!digitalRead(sda)) {
+		_i2c_pull(scl);
+		_i2c_release(scl);
+	}
 
 	port.scl = scl;
 	port.sda = sda;
@@ -77,6 +82,8 @@ void i2c_send_bit(i2c_t port, int bit) {
 		
 	_i2c_release_wait(port.scl);
 	_i2c_pull(port.scl);
+
+	_i2c_pull(port.sda);
 }
 
 /* Reads a bit from sda */
@@ -87,6 +94,7 @@ int i2c_read_bit(i2c_t port) {
 	_i2c_release(port.scl);
 	s = digitalRead(port.sda);
 	_i2c_pull(port.scl);
+	_i2c_pull(port.sda);
 	
 	return s;
 }
