@@ -28,7 +28,7 @@ typedef struct {
 void _i2c_pull(int pin);
 
 /* Release: releases the line */
-void _i2c_release(int pin);
+int _i2c_release(int pin);
 
 /* Release_wait: releases the line and wait until it goes up*/
 void _i2c_release_wait(int pin);

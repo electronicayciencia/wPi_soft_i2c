@@ -210,8 +210,10 @@ else {
 
 ## Known bugs and limitations
 
+* Bus reset sequence is not compliant.
+* Multi master arbitration not supported.
 * Currently only bits and 8 bit registers are supported.
-* Delays are CPU loops.
+* Delays are CPU expensive.
 * Low speed, 100kHz frequency only.
 * Only master mode.
 

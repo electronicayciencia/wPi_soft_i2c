@@ -16,14 +16,15 @@
 /* Pull: drives the line to level LOW */
 void _i2c_pull(int pin) {
 	pinMode(pin, OUTPUT);
-    digitalWrite(pin, LOW);
+	digitalWrite(pin, LOW);
 	delayMicroseconds((1e6/I2C_FREQ)/2);
 }
 
 /* Release: releases the line and return line status */
-void _i2c_release(int pin) {
+int _i2c_release(int pin) {
 	pinMode(pin, INPUT);
 	delayMicroseconds((1e6/I2C_FREQ)/2);
+	return digitalRead(pin);
 }
 
 /* In case of clock stretching or busy bus we must wait */
