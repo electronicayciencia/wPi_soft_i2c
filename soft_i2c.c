@@ -39,19 +39,16 @@ void _i2c_release_wait(int pin) {
 /* Initializes software emulated i2c */
 i2c_t i2c_init(int scl, int sda) {
 	i2c_t port;
+
+	port.scl = scl;
+	port.sda = sda;
 	
 	pinMode(scl, INPUT);
 	pinMode(sda, INPUT);
 	pullUpDnControl(scl, PUD_UP);
 	pullUpDnControl(sda, PUD_UP);
 
-	while (!digitalRead(sda)) {
-		_i2c_pull(scl);
-		_i2c_release(scl);
-	}
-
-	port.scl = scl;
-	port.sda = sda;
+	i2c_reset(port);
 
 	return port;
 }
@@ -68,7 +65,26 @@ void i2c_start(i2c_t port) {
 /* Stop: release SDA while SCL is up */
 void i2c_stop(i2c_t port) {
 	_i2c_release_wait(port.scl);
-	_i2c_release_wait(port.sda);
+	_i2c_release(port.sda);
+}
+
+/* Reset bus sequence */
+void i2c_reset(i2c_t port) {
+	int i;
+
+	_i2c_release(port.sda);
+
+	do {
+		for (i = 0; i < 9; i++) {
+			_i2c_pull(port.scl);
+			_i2c_release(port.scl);
+		}
+	} while (!digitalRead(port.sda));
+
+	_i2c_pull(port.scl);
+	_i2c_pull(port.sda);
+
+	i2c_stop(port);
 }
 
 /* Sends 0 or 1: 

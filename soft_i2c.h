@@ -43,6 +43,9 @@ void i2c_start(i2c_t port);
 /* Stop: release SDA while SCL is up */
 void i2c_stop(i2c_t port);
 
+/* Reset: software reset bus sequence */
+void i2c_reset(i2c_t port);
+
 /* Sends 0 or 1: 
  * Clock down, send bit, clock up, wait, clock down again */
 void i2c_send_bit(i2c_t port, int bit);
