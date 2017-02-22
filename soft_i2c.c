@@ -56,8 +56,10 @@ i2c_t i2c_init(int scl, int sda) {
 /* Start: pull SDA while SCL is up*/
 /* Best practice is to ensure the bus is not busy before start */
 void i2c_start(i2c_t port) {
-    _i2c_release_wait(port.sda);
+	if (!_i2c_release(port.sda)) 
+		i2c_reset(port);
     _i2c_release_wait(port.scl);
+
 	_i2c_pull(port.sda);
 	_i2c_pull(port.scl);
 }
@@ -65,7 +67,8 @@ void i2c_start(i2c_t port) {
 /* Stop: release SDA while SCL is up */
 void i2c_stop(i2c_t port) {
 	_i2c_release_wait(port.scl);
-	_i2c_release(port.sda);
+	if (!_i2c_release(port.sda))
+		i2c_reset(port);
 }
 
 /* Reset bus sequence */

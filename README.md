@@ -133,6 +133,15 @@ Sends a I2C start signal to the bus passed as parameter. After that, both lines 
 i2c_stop(my_bus);
 ```
 
+#### void i2c_reset(i2c_t bus);
+
+Issues a bus recovery sequence. Tries to raise SDA. If it fails, reads 9 bit until we get SDA high. 
+This function is called automatically by init, start and stop functions. So you seldom need to use this.
+
+```c
+i2c_reset(my_bus);
+```
+
 #### void i2c_send_bit(i2c_t bus, int bit);
 
 Sends one bit through the bus. If second argument is true, it sends one. Zero in other case. 
