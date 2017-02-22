@@ -13,5 +13,5 @@ pcf8591: soft_i2c.c pcf8591.c
 i2cli: soft_i2c.c i2cli.c
 	gcc -o i2cli -lwiringPi soft_i2c.c i2cli.c -I.
 
-all: test scan 24lc128 pcf8591 i2cli
+all: scan 24lc128 pcf8591 i2cli
 
