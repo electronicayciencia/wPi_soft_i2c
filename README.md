@@ -4,9 +4,16 @@ This is a basic software implementation of I2C protocol using WiringPi library f
 
 ## Getting Started
 
-You will need to install Gordon's WiringPi library first. 
+For a quick start guide, just follow these steps:
 
-Download soft_i2c.c and soft_i2c.h and place them into your project directory.
+- Install Gordon's WiringPi library first. 
+- Download [soft_i2c.c](soft_i2c.c) and [soft_i2c.h](soft_i2c.h) and place them into your project directory.
+- Include headers file in your main file.
+- Learn from the examples.
+- And don't forget to include source file when compiling:
+```
+gcc -lwiringPi soft_i2c.c pcf8591.c -o pcf8591
+```
 
 If you are willing to use pins 8 and 9, notice these are hardware enabled I2C pins. So please make sure you unloaded i2c kernel modules before using these routines.
 
