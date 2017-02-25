@@ -235,7 +235,7 @@ else {
 
 ## See also
 
-[El bus I2C a bajo nivel](http://electronicayciencia.blogspot.com/) (Spanish). Extensive description of this code in spanish. Not yet
+[El bus I2C a bajo nivel](http://electronicayciencia.blogspot.com/2017/02/el-bus-i2c-bajo-nivel.html) (Spanish). Extensive description of this code.
 
 ## Authors
 
