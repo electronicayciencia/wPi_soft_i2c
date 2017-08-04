@@ -111,7 +111,7 @@ int i2c_read_bit(i2c_t port) {
 	int s;
 
 	_i2c_release(port.sda);
-	_i2c_release(port.scl);
+	_i2c_release_wait(port.scl);
 	s = digitalRead(port.sda);
 	_i2c_pull(port.scl);
 	_i2c_pull(port.sda);
