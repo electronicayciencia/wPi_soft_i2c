@@ -13,9 +13,33 @@
 #include "soft_i2c.h"
 
 
+void commands_help (void) { 
+	printf(
+		"Valid commands are:\n"\
+		"   s: start\n"
+		"   p: stop\n"\
+		"   a: send ack\n"\
+		"   n: send nak\n"\
+		"   wHH: write byte HH\n"\
+		"   r: read byte\n"\
+		"   txxx: wait xxx ms\n"\
+		"   C: scan\n"\
+		"   q: quit\n"\
+	);
+}
+
+void prompt (void) {
+	printf("i2cli> ");
+}
+
+
 int main (int argc, char **argv)
 {
-	puts ("I2C Command Line Interface");
+	int interactive = 0;
+
+	if (isatty(fileno(stdin))) interactive = 1;
+
+	if (interactive) puts ("I2C Command Line Interface");
 
 	// Check arguments
 	if (argc != 3) {
@@ -42,14 +66,15 @@ int main (int argc, char **argv)
 
 	i2c_t i2c = i2c_init(scl,sda);
 	
-	printf("I2C ready. SCL: %d, SDA: %d\n", scl, sda);
+	if (interactive) printf("I2C ready. SCL: %d, SDA: %d\n", scl, sda);
 	
 	// Start CLI
-	puts ("\ns: start   p: stop   a: ack   n: nak   wHH: write byte HH   r: read byte   q: quit   C: scan");
-	printf("i2cli> ");
+	if (interactive) commands_help();
+	if (interactive) prompt();
 
-	char cmd[5];
+	char cmd[10];
 	char byte;
+	long ms;
 	int terminate = 0;
 	int addr;
 	
@@ -86,7 +111,7 @@ int main (int argc, char **argv)
 				break;
 
 			case 'r':
-				printf("%02x\n", i2c_read_byte(i2c));
+				printf("r -> %02x\n", i2c_read_byte(i2c));
 				break;
 
 			case 'C':
@@ -101,12 +126,18 @@ int main (int argc, char **argv)
 					i2c_stop(i2c);
 				}
 				break;
+			
+			case 't':
+				ms = strtol(cmd + 1, NULL, 10);
+				printf("wait %dms...\n", ms);
+				usleep(ms * 1000);
+				break;
 
 			default :
-				puts ("\ns: start   p: stop   a: ack   n: nak   wHH: write byte HH   r: read byte   q: quit   C: scan");
+				if (interactive) commands_help();
 		}
 
-		printf("i2cli> ");
+		if (interactive) prompt();
 	}	
 
 	i2c_stop(i2c);
