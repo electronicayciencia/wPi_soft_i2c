@@ -1,21 +1,21 @@
 # Software emulated I2C for Raspberry Pi
 
-This is a basic software implementation of I2C protocol using WiringPi library for GPIO.
+This is a basic software implementation of the I2C protocol using WiringPi library for GPIO.
 
 ## Getting Started
 
-For a quick start guide, just follow these steps:
+For a quick start guide, please follow these steps:
 
-- Install Gordon's WiringPi library first. 
+- Install Gordon's WiringPi library. 
 - Download [soft_i2c.c](soft_i2c.c) and [soft_i2c.h](soft_i2c.h) and place them into your project directory.
 - Include headers file in your main file.
-- Learn from the examples.
-- And don't forget to include source file when compiling:
+- Learn commands from the examples.
+- And don't forget to include the source file when compiling:
 ```
 gcc -lwiringPi soft_i2c.c pcf8591.c -o pcf8591
 ```
 
-If you are willing to use pins 8 and 9, notice these are hardware enabled I2C pins. So please make sure you unloaded i2c kernel modules before using these routines.
+If you are willing to use pins 8 and 9, please notice these are hardware enabled I2C pins. So make sure you unloaded i2c kernel modules before using these routines.
 
 ```
 rmmod i2c_dev 
@@ -44,7 +44,7 @@ I2C scan for soft_i2c project
 #### [pcf8591.c](pcf8591.c)
 
 This is a small software to read PCF8591 ADC/DAC. It setup the device to read channel 1 and 
-reads it in continuous mode until the user interrupts.
+reads it in continuous mode until the user stop it.
 
 #### [24lc128.c](24lc128.c)
 
@@ -54,6 +54,9 @@ This example writes a string to a 24ls128 chip and reads it back. It uses 16 bit
 
 This is a little more complicated example. A full command line interface for I2C. Simple but raw.
 
+You can use i2cli as a quick approach to a new device. Then save your commands to a script file like [htu21d.i2c](htu21d.i2c).
+
+Or you can send commands one by one by hand to test or to study a part.
 For example, to write and then read 24lc128 EEPROM, like in the last example, you will use this sequence:
 
 ```
@@ -92,6 +95,7 @@ i2cli> p      ; ack
 i2cli> q      ; quit
 i2cli> Bye!
 ```
+
 
 
 ## Usage

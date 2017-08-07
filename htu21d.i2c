@@ -1,0 +1,45 @@
+; I2C Cli example file for HTU21D
+; Assumes device is at 40h.
+; 
+; Usage: i2c_cli 8 9 < htu21d.i2c
+
+; Soft reset device
+s
+w80
+wfe
+p
+
+t250
+
+; Read Temperature
+s
+w80
+we3
+s
+w81
+r
+a
+r
+a
+r
+n
+p
+
+
+t250
+
+; Read Humidity
+s
+w80
+we5
+s
+w81
+r
+a
+r
+a
+r
+n
+p
+q
+

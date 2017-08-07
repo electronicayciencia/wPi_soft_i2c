@@ -81,6 +81,14 @@ int main (int argc, char **argv)
 	while (!terminate && fgets(cmd, sizeof cmd, stdin)) {
 
 		switch (cmd[0]) {
+			case '\'':
+			case ';':
+			case '%':
+			case '#':
+			case '/':
+				// comment line, do nothing
+				break;
+
 			case 'q':
 				terminate = 1;
 				break;
