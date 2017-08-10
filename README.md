@@ -50,6 +50,10 @@ reads it in continuous mode until the user stop it.
 
 This example writes a string to a 24ls128 chip and reads it back. It uses 16 bit addressing.
 
+#### [htu21d.c](htu21d.c)
+
+This is a not so simple data logger for humidity and temperature sensor HTU21D.
+
 #### [i2cli.c](i2cli.c)
 
 This is a little more complicated example. A full command line interface for I2C. Simple but raw.
