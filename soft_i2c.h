@@ -3,7 +3,9 @@
  *      This is a basic software implementation of I2C protocol 
  *      using WiringPi library GPIO.
  *
- *      Reinoso G. 09/02/2017
+ *      https://github.com/electronicayciencia/wPi_soft_i2c
+ *
+ *      Reinoso G.
  */
 
 #ifndef _SOFT_I2C_H
