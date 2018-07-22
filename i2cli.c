@@ -18,17 +18,19 @@ void commands_help (void) {
 		"Valid commands are:\n"\
 		"   s: start\n"
 		"   p: stop\n"\
+		"   R: Reset bus\n"\
 		"   a: send ack\n"\
 		"   n: send nak\n"\
 		"   wHH: write byte HH\n"\
 		"   r: read byte\n"\
 		"   txxx: wait xxx ms\n"\
-		"   C: scan\n"\
+		"   C: sCan\n"\
 		"   q: quit\n"\
+		"\n"\
 	);
 }
 
-void prompt (void) {
+void prompt () {
 	printf("i2cli> ");
 }
 
@@ -99,6 +101,10 @@ int main (int argc, char **argv)
 
 			case 'p':
 				i2c_stop(i2c);
+				break;
+
+			case 'R':
+				i2c_reset(i2c);
 				break;
 
 			case 'a':

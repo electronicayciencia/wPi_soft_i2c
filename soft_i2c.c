@@ -31,11 +31,19 @@ int _i2c_release(int pin) {
 }
 
 /* In case of clock stretching or busy bus we must wait */
+/* But not wait forever though */
 void _i2c_release_wait(int pin) {
+	int n = 0;
+
 	pinMode(pin, INPUT);
 	delayMicroseconds((1e6/I2C_FREQ)/2);
-	while (!digitalRead(pin))
+	while (!digitalRead(pin)) {
+		if (++n >= 100)	{
+			if (WARN) fprintf(stderr, "Warning: I2C Bus busy of defective.\n");
+			return;
+		}
 		delayMicroseconds(100);
+	}
 	delayMicroseconds((1e6/I2C_FREQ)/2);
 }
 
@@ -77,6 +85,7 @@ void i2c_stop(i2c_t port) {
 /* Reset bus sequence */
 void i2c_reset(i2c_t port) {
 	int i;
+	int n = 0;
 
 	_i2c_release(port.sda);
 
@@ -84,6 +93,10 @@ void i2c_reset(i2c_t port) {
 		for (i = 0; i < 9; i++) {
 			_i2c_pull(port.scl);
 			_i2c_release(port.scl);
+		}
+		if (++n >= 100) {
+			if (WARN) fprintf(stderr, "Warning: I2C Bus busy or defective.\n");
+			return;
 		}
 	} while (!digitalRead(port.sda));
 
@@ -145,5 +158,4 @@ uint8_t i2c_read_byte(i2c_t port) {
 
 	return byte;
 }
-
 

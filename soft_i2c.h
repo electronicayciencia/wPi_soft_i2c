@@ -19,6 +19,7 @@
 #define I2C_NACK   1
 
 #define I2C_FREQ 100000    /* I2C clock max frequency 100kHz */
+#define WARN     1         /* print warning message via stderr */
 
 typedef struct {
 	int scl;
@@ -32,7 +33,7 @@ void _i2c_pull(int pin);
 /* Release: releases the line */
 int _i2c_release(int pin);
 
-/* Release_wait: releases the line and wait until it goes up*/
+/* Release_wait: releases the line and wait until it goes up */
 void _i2c_release_wait(int pin);
 
 /* Initializes software emulated i2c */
