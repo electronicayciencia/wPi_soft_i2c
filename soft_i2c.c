@@ -38,11 +38,12 @@ void _i2c_release_wait(int pin) {
 	pinMode(pin, INPUT);
 	delayMicroseconds((1e6/I2C_FREQ)/2);
 	while (!digitalRead(pin)) {
-		if (++n >= 100)	{
-			if (WARN) fprintf(stderr, "Warning: I2C Bus busy of defective.\n");
+		if (++n >= 50)	{
+			if (WARN) fprintf(stderr, "Warning: I2C Bus busy or defective. Pin %d is LOW for 5s.\n", pin);
 			return;
 		}
-		delayMicroseconds(100);
+		delay(100);
+		pinMode(pin, INPUT);
 	}
 	delayMicroseconds((1e6/I2C_FREQ)/2);
 }
@@ -90,14 +91,15 @@ void i2c_reset(i2c_t port) {
 	_i2c_release(port.sda);
 
 	do {
-		for (i = 0; i < 9; i++) {
+		for (i = 0; i < 10; i++) {
 			_i2c_pull(port.scl);
 			_i2c_release(port.scl);
 		}
 		if (++n >= 100) {
-			if (WARN) fprintf(stderr, "Warning: I2C Bus busy or defective.\n");
+			if (WARN) fprintf(stderr, "Warning: I2C Bus busy or defective. SDA doesn't go UP after reset.\n");
 			return;
 		}
+		delay(10);
 	} while (!digitalRead(port.sda));
 
 	_i2c_pull(port.scl);
