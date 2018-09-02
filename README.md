@@ -56,7 +56,9 @@ This is a not so simple data logger for humidity and temperature sensor HTU21D.
 
 #### [i2cli.c](i2cli.c)
 
-This is a little more complicated example. A full command line interface for I2C. Simple but raw.
+This is a little more complicated example. A full command line interface for I2C. Simple but raw. 
+Latest version has readline and history capabilities as well as some basic checks. 
+You will need to install *libreadline-dev* package in order to compile it.
 
 You can use i2cli as a quick approach to a new device. Then save your commands to a script file like [htu21d.i2c](htu21d.i2c).
 

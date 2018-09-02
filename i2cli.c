@@ -10,6 +10,11 @@
 #include <wiringPi.h>
 #include <stdlib.h>
 
+#include <readline/readline.h>
+#include <readline/history.h>
+
+#define HISTFILE ".i2cli_history"
+
 #include "soft_i2c.h"
 
 
@@ -29,11 +34,6 @@ void commands_help (void) {
 		"\n"\
 	);
 }
-
-void prompt () {
-	printf("i2cli> ");
-}
-
 
 int main (int argc, char **argv)
 {
@@ -68,19 +68,26 @@ int main (int argc, char **argv)
 
 	i2c_t i2c = i2c_init(scl,sda);
 	
-	if (interactive) printf("I2C ready. SCL: %d, SDA: %d\n", scl, sda);
-	
 	// Start CLI
-	if (interactive) commands_help();
-	if (interactive) prompt();
+	if (interactive) {
+		printf("I2C ready. SCL: %d, SDA: %d\n", scl, sda);
+		commands_help();
+		read_history(HISTFILE);
+	}
 
-	char cmd[10];
 	char byte;
 	long ms;
-	int terminate = 0;
 	int addr;
+	int terminate = 0;
+	int active = 0;
 	
-	while (!terminate && fgets(cmd, sizeof cmd, stdin)) {
+	while (!terminate) {
+		char prompt[20];
+		snprintf(prompt, sizeof(prompt), "i2cli%s> ", active ? "*" : " ");
+		char *cmd = readline(prompt);
+
+		if (!cmd)
+			break;
 
 		switch (cmd[0]) {
 			case '\'':
@@ -92,30 +99,48 @@ int main (int argc, char **argv)
 				break;
 
 			case 'q':
+				if (interactive) add_history(cmd);
 				terminate = 1;
 				break;
 
 			case 's':
+				if (interactive) add_history(cmd);
 				i2c_start(i2c);
+				active = 1;
 				break;
 
 			case 'p':
+				if (interactive) add_history(cmd);
+				if (!active) {
+					printf("Already stopped.\n");
+					break;
+				}
 				i2c_stop(i2c);
+				active = 0;
 				break;
 
 			case 'R':
+				if (interactive) add_history(cmd);
 				i2c_reset(i2c);
+				active = 0;
 				break;
 
 			case 'a':
+				if (interactive) add_history(cmd);
 				i2c_send_bit(i2c, I2C_ACK);
 				break;
 
 			case 'n':
+				if (interactive) add_history(cmd);
 				i2c_send_bit(i2c, I2C_NACK);
 				break;
 
 			case 'w':
+				if (interactive) add_history(cmd);
+				if (!active) {
+					printf("Bus in idle state. Try start command.\n");
+					break;
+				}
 				byte = strtol(cmd + 1, NULL, 16);
 				printf("%02x -> ", byte);
 				if(i2c_send_byte(i2c, byte) == I2C_ACK)
@@ -125,10 +150,20 @@ int main (int argc, char **argv)
 				break;
 
 			case 'r':
+				if (interactive) add_history(cmd);
+				if (!active) {
+					printf("Bus in idle state. Try start command.\n");
+					break;
+				}
 				printf("r -> %02x\n", i2c_read_byte(i2c));
 				break;
 
 			case 'C':
+				if (interactive) add_history(cmd);
+				if (active) {
+					printf("Bus is still active. Try stop command.\n");
+					break;
+				}
 				for (addr = 0; addr < 128; addr++) {
 					i2c_start(i2c);
 					// Some devices best scanned using read, other using write
@@ -142,6 +177,7 @@ int main (int argc, char **argv)
 				break;
 			
 			case 't':
+				if (interactive) add_history(cmd);
 				ms = strtol(cmd + 1, NULL, 10);
 				printf("wait %dms...\n", ms);
 				usleep(ms * 1000);
@@ -151,12 +187,15 @@ int main (int argc, char **argv)
 				if (interactive) commands_help();
 		}
 
-		if (interactive) prompt();
+		free(cmd);
 	}	
 
 	i2c_stop(i2c);
 	
-	puts("Bye!");
+	if (interactive) {
+		write_history(HISTFILE);
+		puts("Bye!");
+	}
 
 	return 0;
 }
