@@ -3,7 +3,7 @@
  *      Prueba de I2C por software usando WiringPi
  *      Reinoso G. 09/02/2017
  *
- *      gcc -lwiringPi soft_i2c.c i2cli.c -o i2cli
+ *      gcc -o i2cli -lwiringPi -lreadline soft_i2c.c i2cli.c
  */
  
 #include <stdio.h>
@@ -28,6 +28,7 @@ void commands_help (void) {
 		"   n: send nak\n"\
 		"   wHH: write byte HH\n"\
 		"   r: read byte\n"\
+		"   rxx: read xx bytes\n"\
 		"   txxx: wait xxx ms\n"\
 		"   C: sCan\n"\
 		"   q: quit\n"\
@@ -75,7 +76,6 @@ int main (int argc, char **argv)
 		read_history(HISTFILE);
 	}
 
-	char byte;
 	long ms;
 	int addr;
 	int terminate = 0;
@@ -136,13 +136,21 @@ int main (int argc, char **argv)
 				break;
 
 			case 'w':
+				if (cmd[1] == 0) {
+					if (interactive) commands_help();
+					break;
+				}
+
 				if (interactive) add_history(cmd);
+				
 				if (!active) {
 					printf("Bus in idle state. Try start command.\n");
 					break;
 				}
-				byte = strtol(cmd + 1, NULL, 16);
+
+				char byte = strtoul(cmd + 1, NULL, 16);
 				printf("%02x -> ", byte);
+				
 				if(i2c_send_byte(i2c, byte) == I2C_ACK)
 					puts("ACK");
 				else
@@ -155,7 +163,27 @@ int main (int argc, char **argv)
 					printf("Bus in idle state. Try start command.\n");
 					break;
 				}
-				printf("r -> %02x\n", i2c_read_byte(i2c));
+
+				if (cmd[1] != 0) {
+					int n = strtoul(cmd+1, NULL, 10);
+					if (n < 1) 
+						break;
+
+					printf("r ->");
+					printf(" %02x", i2c_read_byte(i2c));
+					
+					int i;
+					for (i = 1; i < n; i++) {
+						i2c_send_bit(i2c, I2C_ACK);
+						printf(" %02x", i2c_read_byte(i2c));
+					}
+					i2c_send_bit(i2c, I2C_NACK);
+					printf("\n");
+				}
+
+				else {
+					printf("r -> %02x\n", i2c_read_byte(i2c));
+				}
 				break;
 
 			case 'C':
