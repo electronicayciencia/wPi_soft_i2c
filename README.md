@@ -2,7 +2,9 @@
 
 This is a basic software implementation of the I2C protocol using WiringPi library for GPIO.
 
-Note: if you are looking for an I2C LCD library that uses this bit-banged protocol, check [wPi_soft_lcd:
+This library uses WiringPi as a backend, but it can be easily adapted to others as long as you provide suitable alternatives for `pinMode`, `digitalWrite` and `delayMicroseconds` functions.
+
+If you are looking for an I2C LCD library that uses this bit-banged protocol, check [wPi_soft_lcd:
 Library to use PCF8574 based LCD via software I2C bus](https://electronicayciencia.github.io/wPi_soft_lcd/).
 
 ## Getting Started
